@@ -31,8 +31,16 @@
 
     //Calculating the sum of all purchases
     var total = transaction_objects.reduce(function(value, obj){
-        return value + obj.price;
-    },0);
+        return {
+            price: value.price + obj.price,
+            transactions: value.transactions+1,
+            purchases: value.purchases+(obj.price > 0?1:0)
+        };
+    },{
+        price: 0,
+        transactions: 0,
+        purchases: 0
+    });
 
-    alert("You bought for "+(Math.round(total*100)/100)+"$(or whatever your currency on steam is) on your steam.");
+    alert("You bought for "+(Math.round(total.price*100)/100)+"$(or whatever your currency on steam is) with "+total.purchases+" purchases on your steam.");
 })();
