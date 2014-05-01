@@ -20,6 +20,7 @@
         //Formatting the price to get something that works well.
         transaction.price = transaction.price.replace(",",".").replace("--","00");
         if(transaction.price.match(/\d/)){
+            transaction.currency = transaction.price.replace(/[\d\. ]/g,"");
             transaction.price = transaction.price.replace(/[^\d\.]/g,"");
             transaction.price = parseFloat(transaction.price,10);
         } else {
@@ -31,16 +32,46 @@
 
     //Calculating the sum of all purchases
     var total = transaction_objects.reduce(function(value, obj){
-        return {
-            price: value.price + obj.price,
+        var new_obj = {
+            price: value.price,
             transactions: value.transactions+1,
             purchases: value.purchases+(obj.price > 0?1:0)
         };
+        if(obj.currency){
+            new_obj.price[obj.currency] = new_obj.price[obj.currency] || 0;
+            new_obj.price[obj.currency] += obj.price;
+        }
+        return new_obj;
     },{
-        price: 0,
+        price: {},
         transactions: 0,
         purchases: 0
     });
 
-    alert("You bought for "+(Math.round(total.price*100)/100)+"$(or whatever your currency on steam is) with "+total.purchases+" purchases on your steam.");
+    console.log(total);
+
+
+    var node = document.createElement("div");
+    node.className = "block";
+    document.querySelector(".rightcol").appendChild(node);
+
+    var node_header = document.createElement("div");
+    node_header.className = "block_header";
+    node_header.innerHTML = "<div>Statistics</div>";
+    node.appendChild(node_header);
+
+    var node_content = document.createElement("div");
+    node_content.className = "block_content block_content_inner";
+    node.appendChild(node_content);
+
+    var str = "";
+
+    for(var i in total.price){
+        if(total.price.hasOwnProperty(i)){
+            str += "<div class='accountRow accountBalance'><div class='accountData price'>"+(Math.round(total.price[i]*100)/100)+i+"</div><div class='accountLabel'>Total purchase</div></div>";
+        }
+    }
+
+    str += "<div class='accountRow accountBalance'><div class='accountData price'>"+total.purchases+"</div><div class='accountLabel'>Purchase #</div></div>";
+    node_content.innerHTML = str;
 })();
