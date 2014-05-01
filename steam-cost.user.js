@@ -130,8 +130,6 @@
         purchases: 0
     });
 
-    console.log(total);
-
 
     var node = document.createElement("div");
     node.className = "block";
