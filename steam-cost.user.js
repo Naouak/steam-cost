@@ -107,8 +107,6 @@
         transaction_objects.push(transaction);
     });
 
-    console.log(transactions);
-
     //Calculating the sum of all purchases
     var total = transaction_objects.reduce(function(value, obj){
         var new_obj = {
@@ -116,8 +114,11 @@
             transactions: value.transactions+1,
             purchases: value.purchases+(obj.price > 0?1:0)
         };
+
         if(obj.currency){
-            new_obj.price[obj.event][obj.currency] = new_obj.price[obj.currency] || 0;
+            if(new_obj.price[obj.event][obj.currency] === undefined){
+                new_obj.price[obj.event][obj.currency] = 0;
+            }
             new_obj.price[obj.event][obj.currency] += obj.price;
         }
         return new_obj;
